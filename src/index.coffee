@@ -1,61 +1,62 @@
 #import Contentful from 'contentful-ui-extensions-sdk'
 Contentful = require('contentful-ui-extensions-sdk')
-import Style from 'contentful-ui-extensions-sdk/dist/cf-extension.css'
+import cfStyle from 'contentful-ui-extensions-sdk/dist/cf-extension.css'
+import Style from './style.css'
+# import leaflet from 'leaflet'
 import geocoder from './geocoder.coffee'
-import Vue from 'vue'
 
-window.widget = new Vue(
-    el: '#widget'
-    data:
-        query: ''
-        location: {}
-    methods:
-        geocode: (query) -> 
-            geocoder.geocode(query, ['es', 'en', 'fr', 'de'])
+mymap = L.map('map').setView([51.505, -0.09], 13)
+
+L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox.streets',
+    accessToken: 'pk.eyJ1IjoibjRuMCIsImEiOiJjam45OXQ5ZHYwb3JjM3ZwaWZ2d2ZwMnNnIn0.e2D_4CHpVY5mFOFRJhTrcw'
+}).addTo(mymap)
+
+Contentful.init (ext) ->
+    ext.window.startAutoResizer()
+
+    locales = ext.locales.available
+
+    input = document.getElementById('geo-query')
+    button = document.getElementById('geo-btn')
+
+    button.addEventListener 'click', ->
+        query = input.value
+        locales.map (locale) ->
+            geocoder.geocode(query, locale.substring(0, 2))
                 .then (location) => 
-                    console.log 'location', location
-                    this.location = location
+                    mymap.setView([location.lat, location.lng], 13)
+                    console.log 'my map is doing great', location
+                    input.value = location.address
+                    Object.keys(location).forEach (key) ->
+                        if field = ext.entry.fields[key]
+                            field.setValue location[key], locale
                 .catch (err) => console.warn 'HORROR', err
-)
 
-console.log 'content', Contentful
-#When UI Extensions SDK is loaded the callback will be executed.
-Contentful.init (extensionsApi) ->
-    #"extensionsApi" is providing an interface documented here:
-    #https://github.com/contentful/ui-extensions-sdk/blob/master/docs/ui-extensions-sdk-frontend.md
+# input = document.getElementById('geo-query')
+# button = document.getElementById('geo-btn')
 
-    #Automatically adjust UI Extension size in the Web App.
-    extensionsApi.window.startAutoResizer()
-    console.log('init', extensionsApi.fields)
-    # inputEl = document.querySelector('.cf-form-input')
+# mymap = L.map('map').setView([51.505, -0.09], 13)
 
-    # # The field this UI Extension is assigned to.
-    # field = extensionsApi.field
+# L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+#     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+#     maxZoom: 18,
+#     id: 'mapbox.streets',
+#     accessToken: 'pk.eyJ1IjoibjRuMCIsImEiOiJjam45OXQ5ZHYwb3JjM3ZwaWZ2d2ZwMnNnIn0.e2D_4CHpVY5mFOFRJhTrcw'
+# }).addTo(mymap)
 
-    # document.querySelector('.instance-param-value').appendChild(document.createTextNode(extensionsApi.parameters.instance.exampleParameter))
-    # document.querySelector('.installation-param-value').appendChild(document.createTextNode(extensionsApi.parameters.installation.exampleParameter))
-
-
-    # #Callback for changes of the field value.
-    # detachValueChangeHandler = field.onValueChanged(valueChangeHandler)
-    # #Handle keyboard input.
-    # inputEl.addEventListener('input', keyboardInputHandler)
-    # #Handle DOM "onbeforeunload" event.
-    # window.addEventListener('onbeforeunload', unloadHandler)
-
-    # #Handler for external field value changes (e.g. when multiple authors are working on the same entry).
-    # valueChangeHandler = (value) -> inputEl.value = value or ''
-
-    # #Event handler for keyboard input.
-    # keyboardInputHandler = () ->
-    #     value = inputEl.value
-    #     if (typeof value isnt 'string' or value is '')
-    #         field.removeValue()
-    #     else
-    #         field.setValue(value)
-
-    # #Event handler for window unload.
-    # unloadHandler = () ->
-    #     window.removeEventListener('onbeforeunload', unloadHandler);
-    #     inputEl.removeEventListener('input', keyboardInputHandler);
-    #     detachValueChangeHandler();
+# button.addEventListener 'click', ->
+#     query = input.value
+#     ['en', 'es'].map (locale) ->
+#         geocoder.geocode(query, locale.substring(0, 2))
+#             .then (location) => 
+#                 console.log 'tomasha', location
+#                 console.log([location.lat, location.lng], 13)
+#                 mymap.setView([location.lat, location.lng], 13)
+#                 input.value = location.address
+#                 # Object.keys(location).forEach (key) ->
+#                 #     if field = ext.entry.fields[key]
+#                 #         field.setValue location[key], locale
+#             .catch (err) => console.warn 'HORROR', err

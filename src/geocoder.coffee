@@ -12,19 +12,19 @@ geocode = (address, lang) ->
 		.then (response) -> response.json()
 		.then (data) => 
 			if data and data.length
+				console.log 'api response', data[0]
 				return 
 					lat: data[0].lat
 					lng: data[0].lon
-					country: data[0].address.country
+					country: data[0].address.country_code
 					region: data[0].address.state
 					sub_region: data[0].address.county
 					city: data[0].address.city
 					postal_code: data[0].address.postcode
+					address: data[0].display_name
 			else
 				throw new Error('Unknown error')
 
 export default {
-	geocode: (address, langs) ->
-		Promise.all langs.map (lang) ->
-			promiseThrottle.add => geocode address, lang
+	geocode: (address, lang) -> promiseThrottle.add => geocode address, lang
 }

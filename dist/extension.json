@@ -1,6 +1,6 @@
 {
-    "id": "mapAutofill",
-    "name": "Map auto fill",
+    "id": "LocationAutofill",
+    "name": "Location autofill",
     "srcdoc": "./index.html",
     "fieldTypes": ["Object"]
   }

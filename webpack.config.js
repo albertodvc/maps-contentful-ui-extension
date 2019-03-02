@@ -15,11 +15,6 @@ module.exports = {
     port: 3000,
     disableHostCheck: true
   },
-  resolve: {
-    alias: {
-      'vue$': 'vue/dist/vue.esm.js' // 'vue/dist/vue.common.js' for webpack 1
-    }
-  },
   module: {
     rules: [
       {
