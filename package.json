@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dist": "webpack --config webpack.config.js",
     "start:dev": "webpack-dev-server",
-    "start": "contentful extension update --space-id $SPACE --force --src http://localhost:3000/"
+    "start": "contentful extension update --management-token $MR_CTF_M_TOKEN --space-id $MR_CTF_SPACE_ID --force --src http://0.0.0.0:3000/"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
   "homepage": "https://github.com/albertodvc/maps-contentful-ui-extension#readme",
   "devDependencies": {
     "contentful": "^7.0.4",
+    "contentful-cli": "^0.20.0",
     "contentful-ui-extensions-sdk": "^3.4.1",
     "css-loader": "^1.0.0",
     "html-webpack-inline-source-plugin": "0.0.10",

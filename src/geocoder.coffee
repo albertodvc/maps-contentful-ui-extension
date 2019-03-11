@@ -12,7 +12,6 @@ geocode = (address, lang) ->
 		.then (response) -> response.json()
 		.then (data) => 
 			if data and data.length
-				console.log 'api response', data[0]
 				return 
 					lat: data[0].lat
 					lng: data[0].lon
